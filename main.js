@@ -12,7 +12,7 @@ app.use("/articles", articlesRouter);
 //get All Articles
 articlesRouter.get("/", (req, res, next) => {
     if (articles.length <= 0) {
-        const err = new Error("no articles");
+        const err = new Error("No articles");
         err.status = 404;
         next(err);
     }
@@ -20,13 +20,31 @@ articlesRouter.get("/", (req, res, next) => {
     res.json(articles);
 });
 
+//get Article by Author's name
+articlesRouter.get("/search_1/:name",(req,res,next)=>{
+    let index;
+    const articleAuthor = req.params.name;
+    const found = articles.filter((ele,i)=>{
+        index = i;
+        return ele.author == articleAuthor;
+    });
+    if(found){
+        res.status(200);
+        res.json(found)
+    } else {
+        const err = new Error("Author not Found");
+        err.status = 404;
+        next(err);
+    }
+});
+
+//get Article by Id
 articlesRouter.get("/search_2/:id", (req, res, next) => {
     let index;
     const articleId = req.params.id;//query
     const found = articles.find((ele, i) => {
         index = i;
-        // if(ele.id === articleId)
-        return ele.id == Number (articleId)
+        return ele.id == Number(articleId)
     });
     if (found) {
         res.status(200);
