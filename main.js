@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const {uuid} = require("uuidv4");
 const port = 5000;
 
 
@@ -56,6 +57,17 @@ articlesRouter.get("/search_2/:id", (req, res, next) => {
         next(err);
     }
 })
+
+//create new Article 
+articlesRouter.post("/",(req,res,next)=>{
+    const newArticle = req.body.article;
+    // console.log("new...........",newArticle);
+    newArticle.id = uuid();
+    console.log("new...........",newArticle);
+    articles.push(newArticle);
+    res.status(201);
+    res.json(newArticle);
+});
 
 articlesRouter.use((err, req, res, next) => {
     res.status(err.status);
