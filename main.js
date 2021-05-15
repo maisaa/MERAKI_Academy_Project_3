@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const { uuid } = require("uuidv4");// uuid without {}
+const axios = require("axios");
+const articlesRouter = express.Router();
 const port = 5000;
 
-const articlesRouter = express.Router();
 
+//Middleware application level
 app.use(express.json());
 app.use("/articles", articlesRouter);
 
@@ -28,7 +30,7 @@ articlesRouter.get("/search_1/", (req, res, next) => {
     if (found.length > 0) {
         res.status(200);
         res.json(found)
-    } else  {
+    } else {
         const err = new Error("Author not Found");
         err.status = 404;
         next(err);
@@ -68,7 +70,6 @@ articlesRouter.post("/", (req, res, next) => {
         err.status = 500;
         next(err);
     }
-
 });
 
 //update an Article by Id
@@ -95,16 +96,15 @@ articlesRouter.put("/:id", (req, res, next) => {
 });
 
 // //delete Article by Id
-articlesRouter.delete("/:id",(req,res,next)=>{
+articlesRouter.delete("/:id", (req, res, next) => {
     let index;
     const articleId = req.params.id;
-    const found = articles.find((ele,i)=>{
+    const found = articles.find((ele, i) => {
         index = i;
         return ele.id === Number(articleId);
     });
-    if(found){
-        articles.splice(index,1);
-        // console.log(",,")
+    if (found) {
+        articles.splice(index, 1);
         res.status = 200;
         res.json(`Success Delete article with id => ${articleId}`)
     } else {
@@ -121,14 +121,11 @@ articlesRouter.delete('/', (req, res, next) => {
         return ele.author === authorName;
     });
     if (found) {
-        // console.log("before delete........", articles)
-        // console.log("ddd.....", found)
         articles.forEach((ele, i) => {
             if (articles[i] === found[i]) {
                 articles.splice(i, 1);
             }
         });
-        // console.log("after delete........", articles)
         res.status = 200;
         res.json(`Success delete all the articles for the author => ${authorName}`)
     } else {
@@ -138,7 +135,36 @@ articlesRouter.delete('/', (req, res, next) => {
     }
 });
 
+//News API
+const getNews = async () =>{
+    try {
+        let response =  await axios.get('https://newsapi.org/v2/everything?q=tesla&from=2021-04-15&sortBy=publishedAt&apiKey=b0cd0b2802fa4c8ebcec5b2f918d816b');
+        console.log(response.data.articles)
+    } catch (error) {
+        console.log(error)
+    }
+}
+// getNews()
+// console.log(getNews());
+
 //weather API
+//e43ffba62618a9ae08a3644cc2e98c08
+//api.openweathermap.org/data/2.5/weather?q={Amman}&appid={e43ffba62618a9ae08a3644cc2e98c08}
+
+app.get('/weather', async (req,res) => {
+    try {
+        let response =  await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&appid=886705b4c1182eb1c69f28eb8c520e20`);
+        // console.log(".........................",response.data)
+        // console.log(response.data);
+        res.status(200).json(response.data)
+    } catch (error) {
+        // console.log("error/////////////////.......................",error)
+        res.json(error)
+    }
+})
+
+
+
 
 //errors handling 
 articlesRouter.use((err, req, res, next) => {
@@ -177,4 +203,5 @@ const articles = [
 
 app.listen(port, () => {
     console.log(`server is running at http://localhost:${port}`)
+    
 });

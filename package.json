@@ -2,7 +2,7 @@
   "name": "meraki_academy_project_3",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon  main.js",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/maisaa/MERAKI_Academy_Project_3#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.17.1",
     "uuidv4": "^6.2.8"
   }
