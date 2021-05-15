@@ -99,28 +99,28 @@ articlesRouter.put("/:id", (req, res, next) => {
 });
 
 // //delete Article by Id
-// articlesRouter.delete("/:id",(req,res,next)=>{
-//     let index;
-//     const articleId = req.params.id;
-//     const found = articles.find((ele,i)=>{
-//         index = i;
-//         return ele.id === Number(articleId);
-//     });
-//     if(found){
-//         articles.splice(index,1);
-//         // console.log("")
-//         res.status = 200;
-//         res.json(`Success Delete article with id => ${articleId}`)
-//     } else {
-//         const err = new Error(`This id:${articleId} Not Found`);
-//         err.status = 404;
-//         next(err);
-//     }
-// });
+articlesRouter.delete("/:id",(req,res,next)=>{
+    let index;
+    const articleId = req.params.id;
+    const found = articles.find((ele,i)=>{
+        index = i;
+        return ele.id === Number(articleId);
+    });
+    if(found){
+        articles.splice(index,1);
+        // console.log(",,")
+        res.status = 200;
+        res.json(`Success Delete article with id => ${articleId}`)
+    } else {
+        const err = new Error(`This id:${articleId} Not Found`);
+        err.status = 404;
+        next(err);
+    }
+});
 
 // delete Articles by Author
-articlesRouter.delete('/:name', (req, res, next) => {
-    const authorName = req.params.name;
+articlesRouter.delete('/', (req, res, next) => {
+    const authorName = req.body.name;
     const found = articles.filter((ele, i) => {
         return ele.author === authorName;
     });
