@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const {uuid} = require("uuidv4");// uuid without {}
+const { uuid } = require("uuidv4");// uuid without {}
 const port = 5000;
 
 
@@ -22,14 +22,14 @@ articlesRouter.get("/", (req, res, next) => {
 });
 
 //get Article by Author's name
-articlesRouter.get("/search_1/:name",(req,res,next)=>{
+articlesRouter.get("/search_1/:name", (req, res, next) => {
     let index;
     const articleAuthor = req.params.name;
-    const found = articles.filter((ele,i)=>{
+    const found = articles.filter((ele, i) => {
         index = i;
         return ele.author == articleAuthor;
     });
-    if(found){
+    if (found) {
         res.status(200);
         res.json(found)
     } else {
@@ -59,60 +59,84 @@ articlesRouter.get("/search_2/:id", (req, res, next) => {
 })
 
 //create new Article 
-articlesRouter.post("/",(req,res,next)=>{
+articlesRouter.post("/", (req, res, next) => {
     try {
-            const newArticle = req.body.article;
-            newArticle.id = uuid;// uuid.uuid if we use uuid without {}
-            console.log("new...........",newArticle);
-            articles.push(newArticle);
-            res.status(201);
-            res.json(newArticle);
+        const newArticle = req.body.article;
+        newArticle.id = uuid;// uuid.uuid if we use uuid without {}
+        console.log("new...........", newArticle);
+        articles.push(newArticle);
+        res.status(201);
+        res.json(newArticle);
     } catch (error) {
         const err = new Error(`‘Something went wrong!’`);
         err.status = 500;
         next(err);
     }
-    
+
 });
 
 //update an Article by Id
-articlesRouter.put("/:id",(req,res,next)=>{
+articlesRouter.put("/:id", (req, res, next) => {
     let index;
     const articleId = req.params.id;
     // console.log("........put....",articleId);
-    const found = articles.find((ele,i)=>{
+    const found = articles.find((ele, i) => {
         index = i;
-        return ele.id == Number(articleId) ;// or === Number(id) 
+        return ele.id == Number(articleId);// or === Number(id) 
     });
-    if(found){
+    if (found) {
         // console.log("........put....",articles[index]);
-        articles[index] =req.body.article;
+        articles[index] = req.body.article;
         articles[index].id = articleId;
         res.status(200);
         res.json(articles[index])
     } else {
-        console.log("....put...:",found)
+        console.log("....put...:", found)
         const err = new Error(`This Id:${articleId} not Found`);
         err.status = 404;
         next(err);
     }
 });
 
-//delete Article by Id
-articlesRouter.delete("/:id",(req,res,next)=>{
-    let index;
-    const articleId = req.params.id;
-    const found = articles.find((ele,i)=>{
-        index = i;
-        return ele.id === Number(articleId);
+// //delete Article by Id
+// articlesRouter.delete("/:id",(req,res,next)=>{
+//     let index;
+//     const articleId = req.params.id;
+//     const found = articles.find((ele,i)=>{
+//         index = i;
+//         return ele.id === Number(articleId);
+//     });
+//     if(found){
+//         articles.splice(index,1);
+//         // console.log("")
+//         res.status = 200;
+//         res.json(`Success Delete article with id => ${articleId}`)
+//     } else {
+//         const err = new Error(`This id:${articleId} Not Found`);
+//         err.status = 404;
+//         next(err);
+//     }
+// });
+
+// delete Articles by Author
+articlesRouter.delete('/:name', (req, res, next) => {
+    const authorName = req.params.name;
+    const found = articles.filter((ele, i) => {
+        return ele.author === authorName;
     });
-    if(found){
-        articles.splice(index,1);
-        // console.log("")
+    if (found) {
+        // console.log("before delete........", articles)
+        // console.log("ddd.....", found)
+        articles.forEach((ele, i) => {
+            if (articles[i] === found[i]) {
+                articles.splice(i, 1);
+            }
+        });
+        // console.log("after delete........", articles)
         res.status = 200;
-        res.json(`Success Delete article with id => ${articleId}`)
+        res.json(`Success delete all the articles for the author => ${authorName}`)
     } else {
-        const err = new Error(`This id:${articleId} Not Found`);
+        const err = new Error(`No articles from this author: ${authorName} `);
         err.status = 404;
         next(err);
     }
