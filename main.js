@@ -96,7 +96,27 @@ articlesRouter.put("/:id",(req,res,next)=>{
         err.status = 404;
         next(err);
     }
-})
+});
+
+//delete Article by Id
+articlesRouter.delete("/:id",(req,res,next)=>{
+    let index;
+    const articleId = req.params.id;
+    const found = articles.find((ele,i)=>{
+        index = i;
+        return ele.id === Number(articleId);
+    });
+    if(found){
+        articles.splice(index,1);
+        // console.log("")
+        res.status = 200;
+        res.json(`Success Delete article with id => ${articleId}`)
+    } else {
+        const err = new Error(`This id:${articleId} Not Found`);
+        err.status = 404;
+        next(err);
+    }
+});
 
 //errors handling 
 articlesRouter.use((err, req, res, next) => {
