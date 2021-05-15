@@ -22,17 +22,15 @@ articlesRouter.get("/", (req, res, next) => {
 });
 
 //get Article by Author's name
-articlesRouter.get("/search_1/:name", (req, res, next) => {
-    let index;
-    const articleAuthor = req.params.name;
+articlesRouter.get("/search_1/", (req, res, next) => {
+    const articleAuthor = req.query.author;//query
     const found = articles.filter((ele, i) => {
-        index = i;
-        return ele.author == articleAuthor;
+        return ele.author === articleAuthor;
     });
-    if (found) {
+    if (found.length >0) {
         res.status(200);
         res.json(found)
-    } else {
+    } else  {
         const err = new Error("Author not Found");
         err.status = 404;
         next(err);
