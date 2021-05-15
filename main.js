@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const {uuid} = require("uuidv4");
+const {uuid} = require("uuidv4");// uuid without {}
 const port = 5000;
 
 
@@ -60,15 +60,45 @@ articlesRouter.get("/search_2/:id", (req, res, next) => {
 
 //create new Article 
 articlesRouter.post("/",(req,res,next)=>{
-    const newArticle = req.body.article;
-    // console.log("new...........",newArticle);
-    newArticle.id = uuid();
-    console.log("new...........",newArticle);
-    articles.push(newArticle);
-    res.status(201);
-    res.json(newArticle);
+    try {
+            const newArticle = req.body.article;
+            newArticle.id = uuid;// uuid.uuid if we use uuid without {}
+            console.log("new...........",newArticle);
+            articles.push(newArticle);
+            res.status(201);
+            res.json(newArticle);
+    } catch (error) {
+        const err = new Error(`‘Something went wrong!’`);
+        err.status = 500;
+        next(err);
+    }
+    
 });
 
+//update an Article by Id
+articlesRouter.put("/:id",(req,res,next)=>{
+    let index;
+    const articleId = req.params.id;
+    // console.log("........put....",articleId);
+    const found = articles.find((ele,i)=>{
+        index = i;
+        return ele.id == Number(articleId) ;// or === Number(id) 
+    });
+    if(found){
+        // console.log("........put....",articles[index]);
+        articles[index] =req.body.article;
+        articles[index].id = articleId;
+        res.status(200);
+        res.json(articles[index])
+    } else {
+        console.log("....put...:",found)
+        const err = new Error(`This Id:${articleId} not Found`);
+        err.status = 404;
+        next(err);
+    }
+})
+
+//errors handling 
 articlesRouter.use((err, req, res, next) => {
     res.status(err.status);
     res.json({
@@ -78,8 +108,6 @@ articlesRouter.use((err, req, res, next) => {
         },
     });
 });
-
-
 
 const articles = [
     {
@@ -104,9 +132,6 @@ const articles = [
         author: 'Jouza',
     },
 ];
-
-
-
 
 app.listen(port, () => {
     console.log(`server is running at http://localhost:${port}`)
