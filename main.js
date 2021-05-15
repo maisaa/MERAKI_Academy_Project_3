@@ -3,9 +3,7 @@ const app = express();
 const { uuid } = require("uuidv4");// uuid without {}
 const port = 5000;
 
-
 const articlesRouter = express.Router();
-
 
 app.use(express.json());
 app.use("/articles", articlesRouter);
@@ -24,10 +22,10 @@ articlesRouter.get("/", (req, res, next) => {
 //get Article by Author's name
 articlesRouter.get("/search_1/", (req, res, next) => {
     const articleAuthor = req.query.author;//query
-    const found = articles.filter((ele, i) => {
+    const found = articles.filter((ele) => {
         return ele.author === articleAuthor;
     });
-    if (found.length >0) {
+    if (found.length > 0) {
         res.status(200);
         res.json(found)
     } else  {
@@ -40,7 +38,7 @@ articlesRouter.get("/search_1/", (req, res, next) => {
 //get Article by Id
 articlesRouter.get("/search_2/:id", (req, res, next) => {
     let index;
-    const articleId = req.params.id;//query
+    const articleId = req.params.id;
     const found = articles.find((ele, i) => {
         index = i;
         return ele.id == Number(articleId)
@@ -60,7 +58,7 @@ articlesRouter.get("/search_2/:id", (req, res, next) => {
 articlesRouter.post("/", (req, res, next) => {
     try {
         const newArticle = req.body.article;
-        newArticle.id = uuid;// uuid.uuid if we use uuid without {}
+        newArticle.id = uuid();// uuid.uuid if we use uuid without {}
         console.log("new...........", newArticle);
         articles.push(newArticle);
         res.status(201);
@@ -139,6 +137,8 @@ articlesRouter.delete('/', (req, res, next) => {
         next(err);
     }
 });
+
+//weather API
 
 //errors handling 
 articlesRouter.use((err, req, res, next) => {
