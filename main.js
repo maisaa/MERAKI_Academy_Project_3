@@ -168,12 +168,13 @@ app.get('/weather', async (req, res) => {
 })
 //..........................Part 2............
 usersRouter.post("/", (req, res, next) => {
-    
+
     const { firstName, lastName, age, country, email, password } = req.body;
     const author1 = new User({ firstName, lastName, age, country, email, password })
     console.log("...3....",author1)
     author1.save()
         .then((result) => {
+            res.status(201);
             res.json(result);
         }).catch((err) => {
             res.send(err);
