@@ -3,12 +3,16 @@ const app = express();
 const { uuid } = require("uuidv4");// uuid without {}
 const axios = require("axios");
 const articlesRouter = express.Router();
+const usersRouter = express.Router();
+const db = require("./db");
+const { User, Article } = require("./schema");
 const port = 5000;
 
 
 //Middleware application level
 app.use(express.json());
 app.use("/articles", articlesRouter);
+app.use("/users", usersRouter)
 
 //get All Articles
 articlesRouter.get("/", (req, res, next) => {
@@ -136,9 +140,9 @@ articlesRouter.delete('/', (req, res, next) => {
 });
 
 //News API
-const getNews = async () =>{
+const getNews = async () => {
     try {
-        let response =  await axios.get('https://newsapi.org/v2/everything?q=tesla&from=2021-04-15&sortBy=publishedAt&apiKey=b0cd0b2802fa4c8ebcec5b2f918d816b');
+        let response = await axios.get('https://newsapi.org/v2/everything?q=tesla&from=2021-04-15&sortBy=publishedAt&apiKey=b0cd0b2802fa4c8ebcec5b2f918d816b');
         console.log(response.data.articles)
     } catch (error) {
         console.log(error)
@@ -151,9 +155,9 @@ const getNews = async () =>{
 //e43ffba62618a9ae08a3644cc2e98c08
 //api.openweathermap.org/data/2.5/weather?q={Amman}&appid={e43ffba62618a9ae08a3644cc2e98c08}
 
-app.get('/weather', async (req,res) => {
+app.get('/weather', async (req, res) => {
     try {
-        let response =  await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&appid=886705b4c1182eb1c69f28eb8c520e20`);
+        let response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&appid=886705b4c1182eb1c69f28eb8c520e20`);
         // console.log(".........................",response.data)
         // console.log(response.data);
         res.status(200).json(response.data)
@@ -161,6 +165,19 @@ app.get('/weather', async (req,res) => {
         // console.log("error/////////////////.......................",error)
         res.json(error)
     }
+})
+//..........................Part 2............
+usersRouter.post("/", (req, res, next) => {
+    
+    const { firstName, lastName, age, country, email, password } = req.body;
+    const author1 = new User({ firstName, lastName, age, country, email, password })
+    console.log("...3....",author1)
+    author1.save()
+        .then((result) => {
+            res.json(result);
+        }).catch((err) => {
+            res.send(err);
+        })
 })
 
 
@@ -203,5 +220,5 @@ const articles = [
 
 app.listen(port, () => {
     console.log(`server is running at http://localhost:${port}`)
-    
+
 });
