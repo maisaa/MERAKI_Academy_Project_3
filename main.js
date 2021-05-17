@@ -61,19 +61,45 @@ articlesRouter.get("/search_2/:id", (req, res, next) => {
 })
 
 //create new Article 
-articlesRouter.post("/", (req, res, next) => {
-    try {
-        const newArticle = req.body.article;
-        newArticle.id = uuid();// uuid.uuid if we use uuid without {}
-        console.log("new...........", newArticle);
-        articles.push(newArticle);
-        res.status(201);
-        res.json(newArticle);
-    } catch (error) {
-        const err = new Error(`‘Something went wrong!’`);
-        err.status = 500;
-        next(err);
-    }
+// articlesRouter.post("/", (req, res, next) => {
+//     try {
+//         const newArticle = req.body.article;
+//         newArticle.id = uuid();// uuid.uuid if we use uuid without {}
+//         console.log("new...........", newArticle);
+//         articles.push(newArticle);
+//         res.status(201);
+//         res.json(newArticle);
+//     } catch (error) {
+//         const err = new Error(`‘Something went wrong!’`);
+//         err.status = 500;
+//         next(err);
+//     }
+// });
+articlesRouter.post("/", async (req, res) => {
+    const {title, description} = req.body.article;
+    let author;
+    // // console.log(":::::",newArticle)
+    await User.findOne({user:User._id})
+                .then((result) =>{
+                    author = result;
+                    console.log("......>>",author._id)
+                })
+                .catch((err)=>{
+                    console.log(err);
+                });
+    const newArticle = new Article({
+        title,
+        description,
+        author: author._id,
+    });
+    console.log("......newArticle.......",newArticle.description)
+    newArticle.save()
+        .then((result) => {
+            res.status(201);
+            res.json(result);
+        }).catch((err) => {
+            res.send(err);
+        })
 });
 
 //update an Article by Id
