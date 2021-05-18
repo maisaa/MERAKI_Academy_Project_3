@@ -5,7 +5,7 @@ const axios = require("axios");
 const articlesRouter = express.Router();
 const usersRouter = express.Router();
 const db = require("./db");
-const { User, Article } = require("./schema");
+const { User, Article, Comment } = require("./schema");
 const port = 5000;
 
 
