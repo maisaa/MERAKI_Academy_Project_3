@@ -78,18 +78,18 @@ articlesRouter.post("/", async (req, res) => {
         })
 });
 //create new Comment
-articlesRouter.post("/:id/comment",async (req,res)=>{
-    console.log("new Comment...",req.body)
-    const {comment, commenter} = req.body;
-    const newComment = new Comment({ comment, commenter})
+articlesRouter.post("/:id/comment", async (req, res) => {
+    console.log("new Comment...", req.body)
+    const { comment, commenter } = req.body;
+    const newComment = new Comment({ comment, commenter })
     newComment.save()
-            .then((result)=>{
-                res.status(200);
-                res.send(result)
-            })
-            .catch((err)=>{
-                res.send(err)
-            })
+        .then((result) => {
+            res.status(200);
+            res.send(result)
+        })
+        .catch((err) => {
+            res.send(err)
+        })
 
 })
 
@@ -106,15 +106,15 @@ articlesRouter.put("/:id", (req, res) => {
 });
 
 //delete Article by Id
-articlesRouter.delete("/:id",async (req,res)=>{
-    await Article.findByIdAndDelete({_id:req.params.id})
-    .then((result)=>{
-        res.status(200);
-        res.json(result);
-    })
-    .catch((err)=>{
-        res.send(err)
-    })
+articlesRouter.delete("/:id", async (req, res) => {
+    await Article.findByIdAndDelete({ _id: req.params.id })
+        .then((result) => {
+            res.status(200);
+            res.json(result);
+        })
+        .catch((err) => {
+            res.send(err)
+        })
 });
 
 // delete Articles by Author
@@ -151,7 +151,21 @@ usersRouter.post("/", (req, res, next) => {
             res.send(err);
         })
 })
-
+app.post("/login", async (req, res) => {
+    await User.find({ $and: [{ email: req.body.email }, { password: req.body.password }] }).exec()
+        .then((result) => {
+            if (result.length > 0) {
+                res.status(200);
+                res.json("Valid login credentials");
+            } else {
+                res.status(401);
+                res.send("Invalid login credentials");
+            }
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+})
 
 //............................................................................................
 //News API
@@ -174,7 +188,8 @@ app.get('/weather', async (req, res) => {
     try {
         let response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&appid=886705b4c1182eb1c69f28eb8c520e20`);
         res.status(200).json(response.data)
-    } catch (error) {console.log("error/////////////////.......................",error)
+    } catch (error) {
+        console.log("error/////////////////.......................", error)
         res.json(error)
     }
 })
