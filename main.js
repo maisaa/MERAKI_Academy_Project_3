@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { uuid } = require("uuidv4");// uuid without {}
+// const { uuid } = require("uuidv4");// uuid without {}
 const axios = require("axios");
 const articlesRouter = express.Router();
 const usersRouter = express.Router();
@@ -15,120 +15,60 @@ app.use("/articles", articlesRouter);
 app.use("/users", usersRouter)
 
 //get All Articles
-// articlesRouter.get("/", (req, res, next) => {
-//     if (articles.length <= 0) {
-//         const err = new Error("No articles");
-//         err.status = 404;
-//         next(err);
-//     }
-//     res.status(200);
-//     res.json(articles);
-// });
-
 //with populate => Article.find({},"title description").populate("author","firstName lastName")
-    
-articlesRouter.get("/",(req,res)=>{
-    Article.find({},"title description author")
-    .then((result)=>{
-        res.json(result);
-    })
-    .catch((err)=>{
-        res.json(err);
-    });
+articlesRouter.get("/", (req, res) => {
+    Article.find({}, "title description author")
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => {
+            res.json(err);
+        });
 });
 
-// //get Article by Author's name
-// articlesRouter.get("/search_1/", (req, res, next) => {
-//     const articleAuthor = req.query.author;//query
-//     const found = articles.filter((ele) => {
-//         return ele.author === articleAuthor;
-//     });
-//     if (found.length > 0) {
-//         res.status(200);
-//         res.json(found)
-//     } else {
-//         const err = new Error("Author not Found");
-//         err.status = 404;
-//         next(err);
-//     }
-// });
-
-articlesRouter.get("/search_1/",async (req, res)=>{
+//get Article by Author's name
+articlesRouter.get("/search_1/", async (req, res) => {
     // console.log("..search_1......", req.query.name)
     let author;
-    await User.findOne({firstName: req.query.author})
-                .then((result)=>{
-                    author = result;
-                    console.log("user findOne.....",author.firstName)
-                })
-                .catch((err)=>{
-                    res.send(err);
-                });
-    Article.find({author : author._id})
-        .then((result)=>{
-            console.log("Article findOne.....",result)
+    await User.findOne({ firstName: req.query.author })
+        .then((result) => {
+            author = result;
+            console.log("user findOne.....", author.firstName)
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+    Article.find({ author: author._id })
+        .then((result) => {
+            console.log("Article findOne.....", result)
             res.send(result);
         })
-        .catch((err)=>{
+        .catch((err) => {
             res.send(err);
         });
 });
 
 //get Article by Id
-// articlesRouter.get("/search_2/:id", (req, res, next) => {
-//     let index;
-//     const articleId = req.params.id;
-//     const found = articles.find((ele, i) => {
-//         index = i;
-//         return ele.id == Number(articleId)
-//     });
-//     if (found) {
-//         res.status(200);
-//         console.log("articleId....", (index) + 1)
-//         res.json(articles[(index)]);
-//     } else {
-//         const err = new Error(`this id(${articleId}) not Found`);
-//         err.status = 404;
-//         next(err);
-//     }
-// })
-
-articlesRouter.get("/search_2/:id",(req,res)=>{
-    // console.log("60a2b36d4bf74e31a0e60655   ",req.params.id)
-    Article.find({_id:req.params.id}).populate("author","firstName lastName age")
-            .then((result)=>{
-                res.status(200);
-                // console.log("......",result[0].title);
-                res.send(result);
-            })
-            .catch((err)=>{
-                res.send(err)
-            })
+articlesRouter.get("/search_2/:id", (req, res) => {
+    Article.find({ _id: req.params.id }).populate("author", "firstName lastName age")
+        .then((result) => {
+            res.status(200);
+            res.send(result);
+        })
+        .catch((err) => {
+            res.send(err)
+        })
 })
 
-//create new Article 
-// articlesRouter.post("/", (req, res, next) => {
-//     try {
-//         const newArticle = req.body.article;
-//         newArticle.id = uuid();// uuid.uuid if we use uuid without {}
-//         console.log("new...........", newArticle);
-//         articles.push(newArticle);
-//         res.status(201);
-//         res.json(newArticle);
-//     } catch (error) {
-//         const err = new Error(`‘Something went wrong!’`);
-//         err.status = 500;
-//         next(err);
-//     }
-// });
+//create new Article
 articlesRouter.post("/", async (req, res) => {
-    const {title, description, author} = req.body.article;
+    const { title, description, author } = req.body.article;
     const newArticle = new Article({
         title,
         description,
         author,
     });
-    console.log("......newArticle.......",newArticle.author)
+    console.log("......newArticle.......", newArticle.author)
     newArticle.save()
         .then((result) => {
             res.status(201);
@@ -138,133 +78,67 @@ articlesRouter.post("/", async (req, res) => {
         })
 });
 
-// //update an Article by Id
-// articlesRouter.put("/:id", (req, res, next) => {
-//     let index;
-//     const articleId = req.params.id;
-//     // console.log("........put....",articleId);
-//     const found = articles.find((ele, i) => {
-//         index = i;
-//         return ele.id == Number(articleId);// or === Number(id) 
-//     });
-//     if (found) {
-//         // console.log("........put....",articles[index]);
-//         articles[index] = req.body.article;
-//         articles[index].id = articleId;
-//         res.status(200);
-//         res.json(articles[index])
-//     } else {
-//         console.log("....put...:", found)
-//         const err = new Error(`This Id:${articleId} not Found`);
-//         err.status = 404;
-//         next(err);
-//     }
-// });
-
+//update an Article by Id
 articlesRouter.put("/:id", (req, res) => {
-    // console.log("put......",req.params.id)
-    Article.findOneAndUpdate({_id:req.params.id},req.body.article,{new:true})
+    Article.findOneAndUpdate({ _id: req.params.id }, req.body.article, { new: true })
+        .then((result) => {
+            res.status(201);
+            res.json(result)
+        })
+        .catch((err) => {
+            res.send(err)
+        })
+});
+
+//delete Article by Id
+articlesRouter.delete("/:id",async (req,res)=>{
+    await Article.findByIdAndDelete({_id:req.params.id})
     .then((result)=>{
-        // console.log("...............",result)
-        res.status(201);
-        res.json(result)
+        res.status(200);
+        res.json(result);
     })
     .catch((err)=>{
         res.send(err)
     })
 });
 
-// // //delete Article by Id
-// articlesRouter.delete("/:id", (req, res, next) => {
-//     let index;
-//     const articleId = req.params.id;
-//     const found = articles.find((ele, i) => {
-//         index = i;
-//         return ele.id === Number(articleId);
-//     });
-//     if (found) {
-//         articles.splice(index, 1);
-//         res.status = 200;
-//         res.json(`Success Delete article with id => ${articleId}`)
-//     } else {
-//         const err = new Error(`This id:${articleId} Not Found`);
-//         err.status = 404;
-//         next(err);
-//     }
-// });
-
-// articlesRouter.delete("/",async (req,res)=>{
-//     // console.log(".....delete this...",req.query._id)
-//     await Article.findByIdAndDelete({_id:req.query._id})
-//     .then((result)=>{
-//         // console.log(".....delete this...",result)
-//         res.status(200);
-//         res.json(result);
-//     })
-//     .catch((err)=>{
-//         res.send(err)
-//     })
-// });
-
-
 // delete Articles by Author
-// articlesRouter.delete('/', (req, res, next) => {
-//     const authorName = req.body.name;
-//     const found = articles.filter((ele, i) => {
-//         return ele.author === authorName;
-//     });
-//     if (found) {
-//         articles.forEach((ele, i) => {
-//             if (articles[i] === found[i]) {
-//                 articles.splice(i, 1);
-//             }
-//         });
-//         res.status = 200;
-//         res.json(`Success delete all the articles for the author => ${authorName}`)
-//     } else {
-//         const err = new Error(`No articles from this author: ${authorName} `);
-//         err.status = 404;
-//         next(err);
-//     }
-// });
-articlesRouter.delete("/", async (req,res)=>{
-    console.log(".......delete by author",req.query.author);
+articlesRouter.delete("/", async (req, res) => {
+    console.log(".......delete by author", req.query.author);
     let author;
-    await User.findOne({firstName: req.query.author})
-            .then((result)=>{
-                author = result;
-                //res.send(result);
-            })
-            .catch((err)=>{
-                res.send(err);
-            });
-    Article.deleteMany({author: author._id})
-            .then((result)=>{
-                res.send(result)
-            }) 
-            .catch((err)=>{
-                res.send(err)
-            })       
-    // let author;
-    // await User.findOne({firstName: req.query.author})
-    //             .then((result)=>{
-    //                 author = result;
-    //                 console.log("user findOne.....",author.firstName)
-    //             })
-    //             .catch((err)=>{
-    //                 res.send(err);
-    //             });
-    // Article.deleteMany({author : author._id})
-    //     .then((result)=>{
-    //         console.log("Articles deleted.....",result)
-    //         res.send(result);
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err);
-    //     });
+    await User.findOne({ firstName: req.query.author })
+        .then((result) => {
+            author = result;
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+    Article.deleteMany({ author: author._id })
+        .then((result) => {
+            res.send(result)
+        })
+        .catch((err) => {
+            res.send(err)
+        })
+})
+
+//create new user
+usersRouter.post("/", (req, res, next) => {
+
+    const { firstName, lastName, age, country, email, password } = req.body;
+    const author1 = new User({ firstName, lastName, age, country, email, password })
+    console.log("...3....", author1)
+    author1.save()
+        .then((result) => {
+            res.status(201);
+            res.json(result);
+        }).catch((err) => {
+            res.send(err);
+        })
 })
 
 
+//............................................................................................
 //News API
 const getNews = async () => {
     try {
@@ -284,66 +158,12 @@ const getNews = async () => {
 app.get('/weather', async (req, res) => {
     try {
         let response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&appid=886705b4c1182eb1c69f28eb8c520e20`);
-        // console.log(".........................",response.data)
-        // console.log(response.data);
         res.status(200).json(response.data)
-    } catch (error) {
-        // console.log("error/////////////////.......................",error)
+    } catch (error) {console.log("error/////////////////.......................",error)
         res.json(error)
     }
 })
-//..........................Part 2............
-usersRouter.post("/", (req, res, next) => {
-
-    const { firstName, lastName, age, country, email, password } = req.body;
-    const author1 = new User({ firstName, lastName, age, country, email, password })
-    console.log("...3....",author1)
-    author1.save()
-        .then((result) => {
-            res.status(201);
-            res.json(result);
-        }).catch((err) => {
-            res.send(err);
-        })
-})
-
-
-
-
-//errors handling 
-articlesRouter.use((err, req, res, next) => {
-    res.status(err.status);
-    res.json({
-        err: {
-            status: err.status,
-            message: err.message,
-        },
-    });
-});
-
-const articles = [
-    {
-        id: 1,
-        title: 'How I learn coding?',
-        description:
-            'Lorem, Quam, mollitia.',
-        author: 'Jouza',
-    },
-    {
-        id: 2,
-        title: 'Coding Best Practices',
-        description:
-            'Lorem, ipsum dolor sit, Quam, mollitia.',
-        author: 'Besslan',
-    },
-    {
-        id: 3,
-        title: 'Debugging',
-        description:
-            'Lorem, Quam, mollitia.',
-        author: 'Jouza',
-    },
-];
+//............................................................................................
 
 app.listen(port, () => {
     console.log(`server is running at http://localhost:${port}`)
