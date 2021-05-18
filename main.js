@@ -77,6 +77,21 @@ articlesRouter.post("/", async (req, res) => {
             res.send(err);
         })
 });
+//create new Comment
+articlesRouter.post("/:id/comment",async (req,res)=>{
+    console.log("new Comment...",req.body)
+    const {comment, commenter} = req.body;
+    const newComment = new Comment({ comment, commenter})
+    newComment.save()
+            .then((result)=>{
+                res.status(200);
+                res.send(result)
+            })
+            .catch((err)=>{
+                res.send(err)
+            })
+
+})
 
 //update an Article by Id
 articlesRouter.put("/:id", (req, res) => {
