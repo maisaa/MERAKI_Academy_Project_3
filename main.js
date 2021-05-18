@@ -25,8 +25,10 @@ app.use("/users", usersRouter)
 //     res.json(articles);
 // });
 
+//with populate => Article.find({},"title description").populate("author","firstName lastName")
+    
 articlesRouter.get("/",(req,res)=>{
-    Article.find({},"title description").populate("author","firstName lastName")
+    Article.find({},"title description author")
     .then((result)=>{
         res.json(result);
     })
@@ -35,20 +37,40 @@ articlesRouter.get("/",(req,res)=>{
     });
 });
 
-//get Article by Author's name
-articlesRouter.get("/search_1/", (req, res, next) => {
-    const articleAuthor = req.query.author;//query
-    const found = articles.filter((ele) => {
-        return ele.author === articleAuthor;
-    });
-    if (found.length > 0) {
-        res.status(200);
-        res.json(found)
-    } else {
-        const err = new Error("Author not Found");
-        err.status = 404;
-        next(err);
-    }
+// //get Article by Author's name
+// articlesRouter.get("/search_1/", (req, res, next) => {
+//     const articleAuthor = req.query.author;//query
+//     const found = articles.filter((ele) => {
+//         return ele.author === articleAuthor;
+//     });
+//     if (found.length > 0) {
+//         res.status(200);
+//         res.json(found)
+//     } else {
+//         const err = new Error("Author not Found");
+//         err.status = 404;
+//         next(err);
+//     }
+// });
+
+articlesRouter.get("/search_1/:name",async (req, res)=>{
+    // console.log("..search_1......", req.params.name)
+    let author;
+    await User.findOne({firstName: req.params.name})
+                .then((result)=>{
+                    author = result;
+                    console.log("user findOne.....",author.firstName)
+                })
+                .catch((err)=>{
+                    res.send(err);
+                });
+    Article.find({author : author._id})
+        .then((result)=>{
+            res.send(result);
+        })
+        .catch((err)=>{
+            res.send(err);
+        });
 });
 
 //get Article by Id
