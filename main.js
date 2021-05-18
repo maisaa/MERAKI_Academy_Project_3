@@ -15,14 +15,24 @@ app.use("/articles", articlesRouter);
 app.use("/users", usersRouter)
 
 //get All Articles
-articlesRouter.get("/", (req, res, next) => {
-    if (articles.length <= 0) {
-        const err = new Error("No articles");
-        err.status = 404;
-        next(err);
-    }
-    res.status(200);
-    res.json(articles);
+// articlesRouter.get("/", (req, res, next) => {
+//     if (articles.length <= 0) {
+//         const err = new Error("No articles");
+//         err.status = 404;
+//         next(err);
+//     }
+//     res.status(200);
+//     res.json(articles);
+// });
+
+articlesRouter.get("/",(req,res)=>{
+    Article.find({},"title description").populate("author","firstName lastName")
+    .then((result)=>{
+        res.json(result);
+    })
+    .catch((err)=>{
+        res.json(err);
+    });
 });
 
 //get Article by Author's name
@@ -102,28 +112,28 @@ articlesRouter.post("/", async (req, res) => {
         })
 });
 
-//update an Article by Id
-articlesRouter.put("/:id", (req, res, next) => {
-    let index;
-    const articleId = req.params.id;
-    // console.log("........put....",articleId);
-    const found = articles.find((ele, i) => {
-        index = i;
-        return ele.id == Number(articleId);// or === Number(id) 
-    });
-    if (found) {
-        // console.log("........put....",articles[index]);
-        articles[index] = req.body.article;
-        articles[index].id = articleId;
-        res.status(200);
-        res.json(articles[index])
-    } else {
-        console.log("....put...:", found)
-        const err = new Error(`This Id:${articleId} not Found`);
-        err.status = 404;
-        next(err);
-    }
-});
+// //update an Article by Id
+// articlesRouter.put("/:id", (req, res, next) => {
+//     let index;
+//     const articleId = req.params.id;
+//     // console.log("........put....",articleId);
+//     const found = articles.find((ele, i) => {
+//         index = i;
+//         return ele.id == Number(articleId);// or === Number(id) 
+//     });
+//     if (found) {
+//         // console.log("........put....",articles[index]);
+//         articles[index] = req.body.article;
+//         articles[index].id = articleId;
+//         res.status(200);
+//         res.json(articles[index])
+//     } else {
+//         console.log("....put...:", found)
+//         const err = new Error(`This Id:${articleId} not Found`);
+//         err.status = 404;
+//         next(err);
+//     }
+// });
 
 // //delete Article by Id
 articlesRouter.delete("/:id", (req, res, next) => {
