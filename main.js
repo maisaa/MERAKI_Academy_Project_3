@@ -122,23 +122,13 @@ articlesRouter.get("/search_2/:id",(req,res)=>{
 //     }
 // });
 articlesRouter.post("/", async (req, res) => {
-    const {title, description} = req.body.article;
-    let author;
-    // // console.log(":::::",newArticle)
-    await User.findOne({user:User._id})
-                .then((result) =>{
-                    author = result;
-                    console.log("......>>",author._id)
-                })
-                .catch((err)=>{
-                    console.log(err);
-                });
+    const {title, description, author} = req.body.article;
     const newArticle = new Article({
         title,
         description,
-        author: author._id,
+        author,
     });
-    console.log("......newArticle.......",newArticle.description)
+    console.log("......newArticle.......",newArticle.author)
     newArticle.save()
         .then((result) => {
             res.status(201);
@@ -203,40 +193,77 @@ articlesRouter.put("/:id", (req, res) => {
 //     }
 // });
 
-articlesRouter.delete("/:id",async (req,res)=>{
-    console.log(".....delete this...",req.params.id)
-    await Article.findByIdAndDelete({_id:req.params.id})
-    .then((result)=>{
-        // console.log(".....delete this...",result)
-        res.status(200);
-        res.json(result);
-    })
-    .catch((err)=>{
-        res.send(err)
-    })
-});
+// articlesRouter.delete("/",async (req,res)=>{
+//     // console.log(".....delete this...",req.query._id)
+//     await Article.findByIdAndDelete({_id:req.query._id})
+//     .then((result)=>{
+//         // console.log(".....delete this...",result)
+//         res.status(200);
+//         res.json(result);
+//     })
+//     .catch((err)=>{
+//         res.send(err)
+//     })
+// });
 
 
 // delete Articles by Author
-articlesRouter.delete('/', (req, res, next) => {
-    const authorName = req.body.name;
-    const found = articles.filter((ele, i) => {
-        return ele.author === authorName;
-    });
-    if (found) {
-        articles.forEach((ele, i) => {
-            if (articles[i] === found[i]) {
-                articles.splice(i, 1);
-            }
-        });
-        res.status = 200;
-        res.json(`Success delete all the articles for the author => ${authorName}`)
-    } else {
-        const err = new Error(`No articles from this author: ${authorName} `);
-        err.status = 404;
-        next(err);
-    }
-});
+// articlesRouter.delete('/', (req, res, next) => {
+//     const authorName = req.body.name;
+//     const found = articles.filter((ele, i) => {
+//         return ele.author === authorName;
+//     });
+//     if (found) {
+//         articles.forEach((ele, i) => {
+//             if (articles[i] === found[i]) {
+//                 articles.splice(i, 1);
+//             }
+//         });
+//         res.status = 200;
+//         res.json(`Success delete all the articles for the author => ${authorName}`)
+//     } else {
+//         const err = new Error(`No articles from this author: ${authorName} `);
+//         err.status = 404;
+//         next(err);
+//     }
+// });
+articlesRouter.delete("/", async (req,res)=>{
+    console.log(".......delete by author",req.query.author);
+    let author;
+    await User.findOne({firstName: req.query.author})
+            .then((result)=>{
+                author = result;
+                //res.send(result);
+            })
+            .catch((err)=>{
+                res.send(err);
+            });
+    Article.deleteMany({author: author._id})
+            .then((result)=>{
+                res.send(result)
+            }) 
+            .catch((err)=>{
+                res.send(err)
+            })       
+    // let author;
+    // await User.findOne({firstName: req.query.author})
+    //             .then((result)=>{
+    //                 author = result;
+    //                 console.log("user findOne.....",author.firstName)
+    //             })
+    //             .catch((err)=>{
+    //                 res.send(err);
+    //             });
+    // Article.deleteMany({author : author._id})
+    //     .then((result)=>{
+    //         console.log("Articles deleted.....",result)
+    //         res.send(result);
+    //     })
+    //     .catch((err)=>{
+    //         res.send(err);
+    //     });
+})
+
 
 //News API
 const getNews = async () => {
