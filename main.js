@@ -74,22 +74,35 @@ articlesRouter.get("/search_1/:name",async (req, res)=>{
 });
 
 //get Article by Id
-articlesRouter.get("/search_2/:id", (req, res, next) => {
-    let index;
-    const articleId = req.params.id;
-    const found = articles.find((ele, i) => {
-        index = i;
-        return ele.id == Number(articleId)
-    });
-    if (found) {
-        res.status(200);
-        console.log("articleId....", (index) + 1)
-        res.json(articles[(index)]);
-    } else {
-        const err = new Error(`this id(${articleId}) not Found`);
-        err.status = 404;
-        next(err);
-    }
+// articlesRouter.get("/search_2/:id", (req, res, next) => {
+//     let index;
+//     const articleId = req.params.id;
+//     const found = articles.find((ele, i) => {
+//         index = i;
+//         return ele.id == Number(articleId)
+//     });
+//     if (found) {
+//         res.status(200);
+//         console.log("articleId....", (index) + 1)
+//         res.json(articles[(index)]);
+//     } else {
+//         const err = new Error(`this id(${articleId}) not Found`);
+//         err.status = 404;
+//         next(err);
+//     }
+// })
+
+articlesRouter.get("/search_2/:id",(req,res)=>{
+    console.log("60a2b36d4bf74e31a0e60655   ",req.params.id)
+    Article.find({_id:req.params.id})
+            .then((result)=>{
+                res.status(200);
+                // console.log("......",result[0].title);
+                res.send(result);
+            })
+            .catch((err)=>{
+                res.send(err)
+            })
 })
 
 //create new Article 
