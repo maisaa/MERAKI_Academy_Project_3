@@ -172,35 +172,50 @@ articlesRouter.post("/", async (req, res) => {
 // });
 
 articlesRouter.put("/:id", (req, res) => {
-    console.log("put......",req.params.id)
+    // console.log("put......",req.params.id)
     Article.findOneAndUpdate({_id:req.params.id},req.body.article,{new:true})
     .then((result)=>{
-        console.log("...............",result)
-        res.send(result)
+        // console.log("...............",result)
+        res.status(201);
+        res.json(result)
     })
     .catch((err)=>{
         res.send(err)
     })
 });
 
-// //delete Article by Id
-articlesRouter.delete("/:id", (req, res, next) => {
-    let index;
-    const articleId = req.params.id;
-    const found = articles.find((ele, i) => {
-        index = i;
-        return ele.id === Number(articleId);
-    });
-    if (found) {
-        articles.splice(index, 1);
-        res.status = 200;
-        res.json(`Success Delete article with id => ${articleId}`)
-    } else {
-        const err = new Error(`This id:${articleId} Not Found`);
-        err.status = 404;
-        next(err);
-    }
+// // //delete Article by Id
+// articlesRouter.delete("/:id", (req, res, next) => {
+//     let index;
+//     const articleId = req.params.id;
+//     const found = articles.find((ele, i) => {
+//         index = i;
+//         return ele.id === Number(articleId);
+//     });
+//     if (found) {
+//         articles.splice(index, 1);
+//         res.status = 200;
+//         res.json(`Success Delete article with id => ${articleId}`)
+//     } else {
+//         const err = new Error(`This id:${articleId} Not Found`);
+//         err.status = 404;
+//         next(err);
+//     }
+// });
+
+articlesRouter.delete("/:id",async (req,res)=>{
+    console.log(".....delete this...",req.params.id)
+    await Article.findByIdAndDelete({_id:req.params.id})
+    .then((result)=>{
+        // console.log(".....delete this...",result)
+        res.status(200);
+        res.json(result);
+    })
+    .catch((err)=>{
+        res.send(err)
+    })
 });
+
 
 // delete Articles by Author
 articlesRouter.delete('/', (req, res, next) => {
