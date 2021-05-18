@@ -53,10 +53,10 @@ articlesRouter.get("/",(req,res)=>{
 //     }
 // });
 
-articlesRouter.get("/search_1/:name",async (req, res)=>{
-    // console.log("..search_1......", req.params.name)
+articlesRouter.get("/search_1/",async (req, res)=>{
+    // console.log("..search_1......", req.query.name)
     let author;
-    await User.findOne({firstName: req.params.name})
+    await User.findOne({firstName: req.query.author})
                 .then((result)=>{
                     author = result;
                     console.log("user findOne.....",author.firstName)
@@ -66,6 +66,7 @@ articlesRouter.get("/search_1/:name",async (req, res)=>{
                 });
     Article.find({author : author._id})
         .then((result)=>{
+            console.log("Article findOne.....",result)
             res.send(result);
         })
         .catch((err)=>{
@@ -93,8 +94,8 @@ articlesRouter.get("/search_1/:name",async (req, res)=>{
 // })
 
 articlesRouter.get("/search_2/:id",(req,res)=>{
-    console.log("60a2b36d4bf74e31a0e60655   ",req.params.id)
-    Article.find({_id:req.params.id})
+    // console.log("60a2b36d4bf74e31a0e60655   ",req.params.id)
+    Article.find({_id:req.params.id}).populate("author","firstName lastName age")
             .then((result)=>{
                 res.status(200);
                 // console.log("......",result[0].title);
@@ -169,6 +170,18 @@ articlesRouter.post("/", async (req, res) => {
 //         next(err);
 //     }
 // });
+
+articlesRouter.put("/:id", (req, res) => {
+    console.log("put......",req.params.id)
+    Article.findOneAndUpdate({_id:req.params.id},req.body.article,{new:true})
+    .then((result)=>{
+        console.log("...............",result)
+        res.send(result)
+    })
+    .catch((err)=>{
+        res.send(err)
+    })
+});
 
 // //delete Article by Id
 articlesRouter.delete("/:id", (req, res, next) => {
