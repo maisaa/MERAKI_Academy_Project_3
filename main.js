@@ -8,7 +8,7 @@ const db = require("./db");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { User, Article, Comment } = require("./schema");
+const { User, Article, Comment, Role } = require("./schema");
 const port = process.env.PORT;
 const secret = process.env.SECRET;
 

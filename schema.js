@@ -25,6 +25,11 @@ const commentsSchema = new mongoose.Schema({
     commenter: { type: mongoose.Schema.Types.ObjectId, ref:"User"}
 })
 
+const rolesSchema = new mongoose.Schema({
+    role: { type: String },
+    permissions: [String]
+})
+
 //hash the password
 userSchema.pre("save", async function () {
     this.email = this.email.toLowerCase();
@@ -34,8 +39,10 @@ userSchema.pre("save", async function () {
 const User = mongoose.model("User", userSchema)
 const Article = mongoose.model("Article", articleSchema)
 const Comment = mongoose.model("Comment", commentsSchema)
+const Role = mongoose.model("Role", rolesSchema)
 
 module.exports.User = User;
 module.exports.Article = Article;
 module.exports.Comment = Comment;
+module.exports.Role = Role;
 
