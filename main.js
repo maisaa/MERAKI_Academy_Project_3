@@ -144,7 +144,6 @@ articlesRouter.delete("/", async (req, res) => {
 
 //create new user
 usersRouter.post("/", (req, res, next) => {
-
     const { firstName, lastName, age, country, email, password } = req.body;
     const author1 = new User({ firstName, lastName, age, country, email, password })
     console.log("...3....", author1)
@@ -156,15 +155,44 @@ usersRouter.post("/", (req, res, next) => {
             res.send(err);
         })
 })
+// app.post("/login", async (req, res) => {
+//     await User.find({ $and: [{ email: req.body.email }, { password: req.body.password }] }).exec()
+//         .then((result) => {
+//             if (result.length > 0) {
+//                 res.status(200);
+//                 res.json("Valid login credentials");
+//             } else {
+//                 res.status(401);
+//                 res.send("Invalid login credentials");
+//             }
+//         })
+//         .catch((err) => {
+//             res.send(err);
+//         });
+// })
+//login with Authentication
 app.post("/login", async (req, res) => {
-    await User.find({ $and: [{ email: req.body.email }, { password: req.body.password }] }).exec()
+    await User.findOne({ email: req.body.email } )
         .then((result) => {
-            if (result.length > 0) {
-                res.status(200);
-                res.json("Valid login credentials");
+            console.log("result is found ", result.password)
+            if (!null) {
+                bcrypt.compare(req.body.password, result.password,(err,result)=>{
+                    if(result){
+                        console.log("is result true ? ", result)
+                        res.status(200);
+                        //sign a jwt......
+                        res.json("Valid login credentials");
+                    }else{
+                        console.log("is result false ? ", result)
+                        res.status(403);
+                        res.send("The password you’ve entered is incorrect");
+                    }
+                })
             } else {
-                res.status(401);
-                res.send("Invalid login credentials");
+                // console.log("..........",result.length);
+                console.log("result is not found ", result)
+                res.status(404);
+                res.send("The email doesn't exist");
             }
         })
         .catch((err) => {
