@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+require("dotenv").config();
+const salt = 5;
 
 const userSchema = new mongoose.Schema({
     firstName:{ type: String },
@@ -20,6 +23,12 @@ const articleSchema = new mongoose.Schema({
 const commentsSchema = new mongoose.Schema({
     comment: { type: String },
     commenter: { type: mongoose.Schema.Types.ObjectId, ref:"User"}
+})
+
+//hash the password
+userSchema.pre("save", async function () {
+    this.email = this.email.toLowerCase();
+    this.password = await bcrypt.hash(this.password, salt);   
 })
 
 const User = mongoose.model("User", userSchema)

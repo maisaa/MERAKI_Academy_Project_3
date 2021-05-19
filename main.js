@@ -6,6 +6,7 @@ const articlesRouter = express.Router();
 const usersRouter = express.Router();
 const db = require("./db");
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 const { User, Article, Comment } = require("./schema");
 const port = process.env.PORT;
 
