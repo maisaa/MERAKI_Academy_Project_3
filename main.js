@@ -6,9 +6,11 @@ const articlesRouter = express.Router();
 const usersRouter = express.Router();
 const db = require("./db");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { User, Article, Comment } = require("./schema");
 const port = process.env.PORT;
+const secret = process.env.SECRET;
 
 
 
@@ -66,7 +68,7 @@ articlesRouter.get("/search_2/:id", (req, res) => {
 })
 
 //create new Article
-articlesRouter.post("/", async (req, res) => {
+articlesRouter.post("/" ,async (req, res) => {
     const { title, description, author } = req.body.article;
     const newArticle = new Article({
         title,
@@ -82,8 +84,26 @@ articlesRouter.post("/", async (req, res) => {
             res.send(err);
         })
 });
+
+//middleware function authentication
+const authentication = (req,res,next)=>{
+    const token =req.headers.authorization.split(" ")[1];
+    console.log("token,..........",req.headers.authorization)
+    jwt.verify(token,secret,(err,result)=>{
+        if(result){
+            req.token = result;
+            next();
+        } else {
+            res.status(403);
+            res.json("The token is invalid or expired");
+        }
+    })
+
+
+};
+
 //create new Comment
-articlesRouter.post("/:id/comment", async (req, res) => {
+articlesRouter.post("/:id/comment", authentication, async (req, res) => {
     console.log("new Comment...", req.body)
     const { comment, commenter } = req.body;
     const newComment = new Comment({ comment, commenter })
@@ -178,25 +198,35 @@ app.post("/login", async (req, res) => {
             if (!null) {
                 bcrypt.compare(req.body.password, result.password,(err,result)=>{
                     if(result){
-                        console.log("is result true ? ", result)
+                        // console.log("is result true ?.... ", result)
                         res.status(200);
+                        // res.json("Valid login credentials");
                         //sign a jwt......
-                        res.json("Valid login credentials");
+                        const payload = {
+                            userId:result._id,
+                            country:result.country,
+                        };
+                        const options= { expiresIn: '60m' };
+                        
+                        const token = jwt.sign(payload,secret, options);
+                        res.json(token);
                     }else{
-                        console.log("is result false ? ", result)
+                        // console.log("is result false ? ", result)
                         res.status(403);
                         res.send("The password you’ve entered is incorrect");
                     }
                 })
-            } else {
-                // console.log("..........",result.length);
-                console.log("result is not found ", result)
-                res.status(404);
-                res.send("The email doesn't exist");
-            }
+            } 
+            //else {
+            //     // console.log("..........",result.length);
+            //     // console.log("result is not found ", result)
+            //     res.status(404);
+            //     res.send("The email doesn't exist");
+            // }
         })
-        .catch((err) => {
-            res.send(err);
+        .catch(() => {
+            res.status(404);
+            res.send("The email doesn't exist");
         });
 })
 
