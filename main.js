@@ -5,9 +5,13 @@ const axios = require("axios");
 const articlesRouter = express.Router();
 const usersRouter = express.Router();
 const db = require("./db");
+require("dotenv").config();
 const { User, Article, Comment } = require("./schema");
-const port = 5000;
+const port = process.env.PORT;
 
+
+
+// console.log("...........",process.env.DB_URL);
 
 //Middleware application level
 app.use(express.json());
