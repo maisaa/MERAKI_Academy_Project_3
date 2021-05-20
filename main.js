@@ -84,17 +84,40 @@ articlesRouter.post("/", async (req, res) => {
             res.send(err);
         })
 });
+//closure function called authorization
+//string it is token
+const authorization = (permission)=>{
+    
+    return function(req,res,next){
+        console.log("token.role ..authorization..", req.token.role); 
+        Role.findById({_id:req.token.role})
+                .then((result)=>{
+                    console.log("result.permissions ......",result.permissions);
+                    const perm = result.permissions;
+                    if(perm.includes(permission)){
+                            console.log("match......")
+                            next();
+                        } else {
+                            res.status(403);
+                            res.json("forbidden");
+                        }
+                })
+                .catch((err)=>{
+                    res.send("There is no Role")
+                })
+    }
+}
 
 //middleware function authentication
 const authentication = (req, res, next) => {
-    
     if (req.headers.authorization) {
         const token = req.headers.authorization.split(" ")[1];
-        // console.log("token,..........", token)
         jwt.verify(token, secret, (err, result) => {
             if (result) {
+                console.log("result......",result )
                 req.token = result;
-                next();
+                console.log("authentic......",result.role)
+                next()
             } else {
                 res.status(403);
                 res.json("The token is invalid or expired");
@@ -108,8 +131,8 @@ const authentication = (req, res, next) => {
 
 
 //create new Comment
-articlesRouter.post("/:id/comment", authentication, async (req, res) => {
-    console.log("new Comment...", req.body)
+articlesRouter.post("/:id/comment", authentication,authorization("CREATE_COMMENT"), async (req, res) => {
+    // console.log("new Comment...", req.body)
     const { comment, commenter } = req.body;
     const newComment = new Comment({ comment, commenter })
     newComment.save()
@@ -169,7 +192,7 @@ articlesRouter.delete("/", async (req, res) => {
 //create new user
 usersRouter.post("/", (req, res, next) => {
     const { firstName, lastName, age, country, email, password, role} = req.body;
-    const author1 = new User({ firstName, lastName, age, country, email, password ,role})
+    const author1 = new User({ firstName, lastName, age, country, email, password ,role})//.populate("role", "role permission")
     console.log("...3....", author1)
     author1.save()
         .then((result) => {
@@ -179,40 +202,29 @@ usersRouter.post("/", (req, res, next) => {
             res.send(err);
         })
 })
-// app.post("/login", async (req, res) => {
-//     await User.find({ $and: [{ email: req.body.email }, { password: req.body.password }] }).exec()
-//         .then((result) => {
-//             if (result.length > 0) {
-//                 res.status(200);
-//                 res.json("Valid login credentials");
-//             } else {
-//                 res.status(401);
-//                 res.send("Invalid login credentials");
-//             }
-//         })
-//         .catch((err) => {
-//             res.send(err);
-//         });
-// })
+
 //login with Authentication
 app.post("/login", async (req, res) => {
+    let userInfo;
     await User.findOne({ email: req.body.email })
         .then((result) => {
+            userInfo =result;
             console.log("result is found ", result.password)
             if (!null) {
                 bcrypt.compare(req.body.password, result.password, (err, result) => {
                     if (result) {
-                        // console.log("is result true ?.... ", result)
+                        console.log("is result true ?.... ", result)
                         res.status(200);
                         // res.json("Valid login credentials");
                         //sign a jwt......
                         const payload = {
-                            userId: result._id,
-                            country: result.country,
-                            role: result.role,
+                            userId: userInfo._id,
+                            country: userInfo.country,
+                            role: userInfo.role,
                         };
                         const options = { expiresIn: '60m' };
                         const token = jwt.sign(payload, secret, options);
+                        console.log("login token....",payload)
                         res.json(token);
                     } else {
                         // console.log("is result false ? ", result)

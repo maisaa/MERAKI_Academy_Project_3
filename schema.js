@@ -28,7 +28,7 @@ const commentsSchema = new mongoose.Schema({
 
 const rolesSchema = new mongoose.Schema({
     role: { type: String },
-    permissions: [String]
+    permissions: [{type: String}]
 })
 
 //hash the password
