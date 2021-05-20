@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 const salt = 5;
 
+
+
 const userSchema = new mongoose.Schema({
     firstName:{ type: String },
     lastName:{ type: String },

@@ -116,7 +116,7 @@ const authentication = (req, res, next) => {
             if (result) {
                 console.log("result......",result )
                 req.token = result;
-                console.log("authentic......",result.role)
+                console.log("authentic............",result.role)
                 next()
             } else {
                 res.status(403);
