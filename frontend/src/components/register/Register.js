@@ -1,6 +1,7 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../register/Register.css';
+import axios from 'axios'; 
 
 export const Register = () => {
 
@@ -12,8 +13,20 @@ export const Register = () => {
     
     const handelSubmit = (e) => {
         console.log(e.target);
-
+        axios
+        .post(`http://localhost:5000/users`,{firstName, lastName, age, email, password})
+        .then(response =>{
+            console.log("response.....",response)
+        })
+        .catch((err) => {
+            console.log('ERR:.......',err);
+        });
+        
     };
+
+    // useEffect(() => {
+       
+    // }, [])
     
     return (
         <div className="Register">
