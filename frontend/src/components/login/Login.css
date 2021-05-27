@@ -1,0 +1,31 @@
+
+.Login {
+    border: solid purple 5px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.info{
+    Display: flex;
+    Flex-direction: column; 
+    justify-content: space-around ;
+    width:40%; 
+}
+
+input[type=text], input[type=number], input[type=password] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+#loginBtn {
+    background-color: #3C6EFD;
+    text-align: center;
+    color: rgb(251, 249, 249);  
+    cursor: pointer;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border-radius: 5px;
+    font-size: 20px;
+}

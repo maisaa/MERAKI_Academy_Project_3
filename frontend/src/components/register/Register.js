@@ -22,7 +22,7 @@ export const Register = () => {
     const handelSubmit = (e) => {
         const newUser = { firstName, lastName, age, email, password }
         //client validation
-        if (firstName == ''||lastName =='' || age == undefined || email==''|| password=='') {
+        if (firstName === ''||lastName ==='' || age === undefined || email===''|| password==='') {
             setEmpty(true);
         } else {
             setEmpty(false);
@@ -31,7 +31,7 @@ export const Register = () => {
                 .then(response => {
                     console.log("response.....", response)
                     // server validation
-                    if (response.statusText == 'Created') {
+                    if (response.statusText === 'Created') {
                         // setSubmitted(true);
                         setPostErr(false)
                         setSubmitted(true);
@@ -39,16 +39,11 @@ export const Register = () => {
                         setSubmitted(false);
                         setPostErr(true);
                     }
-                    
-                        // setPostErr(false)
-                        // setSubmitted(true);
-                    
                 })
                 .catch((err) => {
                     console.log('ERR:.......', err);
                     setSubmitted(false);
-                    setPostErr(true)
-                    
+                    setPostErr(true);
                 });
         }
     };
