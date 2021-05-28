@@ -2,16 +2,17 @@ import React from 'react';
 import './Navigation.css';
 // import { Register } from '../register/Register';
 // import { Login } from '../login/Login';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 
-export const Navigation = () => {
+
+export const Navigation = ({token}) => {
     return (
         
         <div className="Nav">
-            <Link to="/dashboard"> dashboard </Link>
-            <Link to="/login"> Login </Link>
-            <Link to="/Register"> Register </Link>
+            {token ? <Link to="/dashboard"> dashboard </Link>: <h1></h1>}
+            {!token ? <Link to="/login"> Login </Link>: <h1></h1>}
+            {!token ? <Link to="/Register"> Register </Link>: <h1></h1>}
         </div>
     )
 }

@@ -29,3 +29,10 @@ input[type=text], input[type=number], input[type=password] {
     border-radius: 5px;
     font-size: 20px;
 }
+
+.toast {
+    background: #D1E7DD;
+    color: #2F6571;
+    text-align: center;
+    border-radius: 5px;
+}

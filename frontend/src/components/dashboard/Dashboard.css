@@ -1,7 +1,7 @@
 .Dash {
     
     margin-bottom: 5px;
-    border: solid rgb(62, 240, 8) 5px;
+    border: solid blue 5px;
     padding: 5px;
     display: flex;
     gap: 16px;

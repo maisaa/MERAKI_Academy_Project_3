@@ -1,32 +1,31 @@
 import React from 'react';
 import './App.css';
+import { useState } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import { Navigation } from './components/navigation/Navigation';
+import { Dashboard } from './components/dashboard/Dashboard';
 import { Register} from './components/register/Register';
 import { Login } from './components/login/Login';
-import { Navigation } from './components/navigation/Navigation';
-import{ Link, Route } from 'react-router-dom';
-import {Dashboard} from './components/dashboard/Dashboard';
 
 
 const App =() => {
+
+
+  const [token, setToken] = useState('');
+  console.log(".....ttt", token)
   return (
     <div className="App">
       <h1>App</h1>
-      <Navigation/>
+      <Navigation token={token}/>
+      <Switch>
       <Route exact path="/register" component={Register}/>
-      <Route exact path="/login" component={Login}/>
-      <Route exact path="/dashboard" component={Dashboard}/>
+      <Route exact path="/login" render={()=> <Login setToken={setToken}/>}/>
+      <Route exact path="/dashboard" render={()=> <Dashboard token={token}/>} />
+      <Route path="*" component={() => "404 NOT FOUND"} />
+      </Switch>
     </div>
   );
 }
-
-// const Navigation = () =>{
-//   return (
-//     <div style={{ display: "flex", gap: "16px" }}>
-//       <Link to="/login"> Login </Link>
-//       <Link to="/Register"> Register </Link>
-//     </div>
-//   )
-// }
 
 export default App;
 
